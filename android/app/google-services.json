@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1068373765864",
+    "project_id": "parafacile-d0d6a",
+    "storage_bucket": "parafacile-d0d6a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068373765864:android:632c3bf385199477e8e35d",
+        "android_client_info": {
+          "package_name": "com.example.parafacile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068373765864-q022o3k0f41c9a9jd1i0pakki52l31mf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK7HPLdopxwcPXpNWZJm3yFZ7Uev9FDtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068373765864-q022o3k0f41c9a9jd1i0pakki52l31mf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
