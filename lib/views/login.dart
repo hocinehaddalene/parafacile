@@ -21,6 +21,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +72,8 @@ class _LoginState extends State<Login> {
                                 setState(() {
                                   signIn(
                                 emailController.text, passwordController.text);
-                             
                                 }); 
+                                
                              
                             }
                           }),
@@ -114,15 +115,22 @@ class _LoginState extends State<Login> {
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       try {
+         
+         ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Color.fromARGB(0, 255, 255, 255),
+          content:Center(child: CircularProgressIndicator(
+
+            backgroundColor: kGreenColor,
+          )),
+));
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
         route();
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: Color.fromARGB(255, 54, 244, 111),
-          content: Text("Bienvenue")));
+       
       } on FirebaseAuthException catch (t) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red,

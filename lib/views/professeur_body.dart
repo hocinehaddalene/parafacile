@@ -3,6 +3,7 @@ import 'package:parafacile/constants.dart';
 
 import 'add_anouncement.dart';
 import 'add_course.dart';
+import 'classroom_post.dart';
 
 class ProfesseurBody extends StatelessWidget {
   const ProfesseurBody({super.key});
@@ -10,6 +11,15 @@ class ProfesseurBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title:Text("Professeur"),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(onPressed: () {}, icon: Icon(Icons.call,color: kGreenColor,)),
+        )
+      ],),
       floatingActionButton: FloatingActionButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
@@ -65,7 +75,16 @@ class ProfesseurBody extends StatelessWidget {
                   );
                 });
           }),
-      body: const Text("hocine"),
+           body: ListView.builder(
+          itemCount: 10,
+          itemBuilder: (context, itemCount) => ClassroomPostWidget(
+            authorName: "professeur",
+            commentCount: 3,
+            postTitle: "Cours de chapitre 3 avec explication ",
+            description: "but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+          ),
+          ),
+      
     );
   }
 }

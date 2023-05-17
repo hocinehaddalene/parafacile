@@ -42,63 +42,26 @@ class _CreateClasseState extends State<CreateClasse> {
         appBar: AppBar(
           title: const Text("Créer une classe"),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Form(
-            child: Column(
-              children: [
-                const Text(
-                  "Saisair les informations pour créer une classe",
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white),
-                ),
-                SizedBox(height: 50,),
-                CustomTextField(labelText: "Nom du classe"),
-                CustomTextField(labelText: "Description",),
-                Row(
-                    children: [
-                      const Text(
-                        'Le niveau d\'étude est :  ',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w200),
-                      ),
-                      Expanded(
-                        child: DropdownButton(
-                          items: const [
-                            DropdownMenuItem(
-                              value: "1ere anne",
-                              child: Text("1ere anne"),
-                            ),
-                            DropdownMenuItem(
-                              child: Text("2eme anne"),
-                              value: "2emme anne",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("3ere anne"),
-                              value: "3ere anne",
-                            ),
-                          ],
-                          value: niveaudropdownValue,
-                          onChanged: niveauOnChanged,
-                          iconSize: 42,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xff8EE5DB)),
-                          isExpanded: true,
-                          iconEnabledColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                      ),
-                      Row(
+        body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                child: Column(
+                  children: [
+                    const Text(
+                      "Saisair les informations pour créer une classe",
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white),
+                    ),
+                    SizedBox(height: 50,),
+                    CustomTextField(labelText: "Nom du classe"),
+                    CustomTextField(labelText: "Description", maxLines: 4,),
+                    Row(
                         children: [
                           const Text(
-                            'la spécialité est : ',
+                            'Le niveau d\'étude est :  ',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -108,44 +71,84 @@ class _CreateClasseState extends State<CreateClasse> {
                             child: DropdownButton(
                               items: const [
                                 DropdownMenuItem(
-                                  value: "ISP",
-                                  child: Text("ISP"),
+                                  value: "1ere anne",
+                                  child: Text("1ere anne"),
                                 ),
                                 DropdownMenuItem(
-                                  value: "LSP",
-                                  child: Text("LSP"),
+                                  child: Text("2eme anne"),
+                                  value: "2emme anne",
                                 ),
                                 DropdownMenuItem(
-                                  value: "MIM",
-                                  child: Text("MIM"),
-                                ),
-                                DropdownMenuItem(
-                                  value: "SF",
-                                  child: Text("SF"),
-                                ),
-                                DropdownMenuItem(
-                                  value: "AMAR",
-                                  child: Text("AMAR"),
+                                  child: Text("3ere anne"),
+                                  value: "3ere anne",
                                 ),
                               ],
-                              value: specialitedropdownValue,
-                              onChanged: specialiteOnChanged,
+                              value: niveaudropdownValue,
+                              onChanged: niveauOnChanged,
                               iconSize: 42,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: kGreenColor),
+                                  color: Color(0xff8EE5DB)),
                               isExpanded: true,
                               iconEnabledColor: Colors.white,
                             ),
                           ),
                         ],
-                      ),
-                      SizedBox(height: 50,),
-                      CustomButton(title: "Créer", textColor: kBackgroundColor, backgroundColor: kGreenColor, onPressed: () {})
-              ],
+                          ),
+                          Row(
+                            children: [
+                              const Text(
+                                'la spécialité est : ',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w200),
+                              ),
+                              Expanded(
+                                child: DropdownButton(
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: "ISP",
+                                      child: Text("ISP"),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: "LSP",
+                                      child: Text("LSP"),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: "MIM",
+                                      child: Text("MIM"),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: "SF",
+                                      child: Text("SF"),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: "AMAR",
+                                      child: Text("AMAR"),
+                                    ),
+                                  ],
+                                  value: specialitedropdownValue,
+                                  onChanged: specialiteOnChanged,
+                                  iconSize: 42,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: kGreenColor),
+                                  isExpanded: true,
+                                  iconEnabledColor: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 50,),
+                          CustomButton(title: "Créer", textColor: kBackgroundColor, backgroundColor: kGreenColor, onPressed: () {})
+                  ],
+                ),
+              ),
             ),
           ),
-        ));
+        );
   }
 }

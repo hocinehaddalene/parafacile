@@ -1,20 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:parafacile/views/etudiant_body.dart';
+import 'package:parafacile/views/professeur_body.dart';
 
-import 'classroomcontent.dart';
-
-class ClassroomItem extends StatelessWidget {
+class ClassroomItem extends StatefulWidget {
   ClassroomItem();
 
   @override
+  State<ClassroomItem> createState() => _ClassroomItemState();
+}
+
+class _ClassroomItemState extends State<ClassroomItem> {
+  @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
+    return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return  ClassroomContent();
-        }));
+        route();
+        setState(() {});
       },
       child: Padding(
-        padding: const EdgeInsets.only(top: 4,bottom: 4),
+        padding: const EdgeInsets.only(top: 4, bottom: 4),
         child: Container(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
           decoration: BoxDecoration(
@@ -43,5 +49,36 @@ class ClassroomItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  route() {
+    print("teh widjet is tapped");
+
+    User? user = FirebaseAuth.instance.currentUser;
+    var kk = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        if (documentSnapshot.get('role') == "Professeur") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ProfesseurBody(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EtudiantBody(),
+            ),
+          );
+        }
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
   }
 }
