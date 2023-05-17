@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parafacile/views/classroom_post.dart';
+import 'package:parafacile/widgets/classroom_post.dart';
 
 import 'classroom_item.dart';
 

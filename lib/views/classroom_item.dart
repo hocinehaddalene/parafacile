@@ -1,11 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:parafacile/views/etudiant_body.dart';
 import 'package:parafacile/views/professeur_body.dart';
 
 class ClassroomItem extends StatefulWidget {
   ClassroomItem();
+
 
   @override
   State<ClassroomItem> createState() => _ClassroomItemState();

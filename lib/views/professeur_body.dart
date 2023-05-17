@@ -3,7 +3,7 @@ import 'package:parafacile/constants.dart';
 
 import 'add_anouncement.dart';
 import 'add_course.dart';
-import 'classroom_post.dart';
+import '../widgets/classroom_post.dart';
 
 class ProfesseurBody extends StatelessWidget {
   const ProfesseurBody({super.key});
