@@ -7,7 +7,9 @@ import 'package:parafacile/views/etudiant_body.dart';
 import 'package:parafacile/views/professeur_body.dart';
 
 class ClassroomItem extends StatefulWidget {
-  ClassroomItem();
+  ClassroomItem({required this.title, required this.classDescription});
+   String? title;
+   String? classDescription;
 
 
   @override
@@ -29,16 +31,16 @@ class _ClassroomItemState extends State<ClassroomItem> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: Color.fromARGB(255, 47, 146, 136)),
-          child: const Column(
+          child:  Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               ListTile(
                 title: Text(
-                  "note.title!",
+                  widget.title ?? "pas de titre",
                   style: TextStyle(color: Colors.white, fontSize: 30),
                 ),
                 subtitle: Text(
-                  "note.subtitle!",
+                  widget.classDescription?? "pas de description",
                   style: TextStyle(color: Color.fromRGBO(80, 80, 80, 1)),
                 ),
               ),

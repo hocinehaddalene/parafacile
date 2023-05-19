@@ -23,6 +23,7 @@ class _EtudiantState extends State<Etudiant> {
     final String? fieldValue = snapshot.get('niveau');
     niveau = fieldValue;
     print(niveau);
+    setState(() {});
     return fieldValue;
   }
 
@@ -37,32 +38,35 @@ class _EtudiantState extends State<Etudiant> {
     return fieldValue;
   }
 
-  late var ClassesCheck = FirebaseFirestore.instance
+  Query<Map<String, dynamic>> get ClassesCheck => FirebaseFirestore.instance
       .collection('Classes')
       .where('niveau', isEqualTo: niveau);
 
   @override
   void initState() {
-    // TODO: implement initState
-    getNiveau();
-    getSpecialite();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getNiveau();
+      getSpecialite();
+    });
+
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Etudiant"),
+          title: const Text("Etudiant"),
         ),
         body: StreamBuilder(
             stream: ClassesCheck.snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Text("has error with data");
+                return const Text("has error with data");
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -75,7 +79,7 @@ class _EtudiantState extends State<Etudiant> {
                               "${snapshot.data?.docs[i].data()['description']}");
                     });
               }
-              return Text("loading....");
+              return const Text("loading....");
             }));
   }
 }

@@ -116,14 +116,6 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState!.validate()) {
       try {
          
-         ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-          duration: Duration(seconds: 2),
-          backgroundColor: Color.fromARGB(0, 255, 255, 255),
-          content:Center(child: CircularProgressIndicator(
-
-            backgroundColor: kGreenColor,
-          )),
-));
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,

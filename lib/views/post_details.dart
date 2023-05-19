@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class Attachment {
-  final String name;
-  final String url;
+   String name;
+   String url;
 
   Attachment({required this.name, required this.url});
 }
@@ -27,7 +27,7 @@ class Post {
 class PostDetails extends StatefulWidget {
    Post post;
 
-  PostDetails({required this.post});
+  PostDetails({super.key, required this.post});
 
   @override
   State<PostDetails> createState() => _PostDetailsState();
@@ -41,12 +41,12 @@ class _PostDetailsState extends State<PostDetails> {
         String newComment = '';
 
         return AlertDialog(
-          title: Text('Add Comment'),
+          title: const Text('Add Comment'),
           content: TextField(
             onChanged: (value) {
               newComment = value;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Enter your comment',
             ),
           ),
@@ -58,7 +58,7 @@ class _PostDetailsState extends State<PostDetails> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         );
@@ -68,108 +68,113 @@ class _PostDetailsState extends State<PostDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Post Details'),
-      ),
-      body: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    widget.post.title,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'Section: ${widget.post.section}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    widget.post.description,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
-            if (widget.post.attachments.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'Attachments',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+    return MaterialApp(
+      theme: ThemeData(useMaterial3: true),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Post Details'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+          
+              children: <Widget>[
+              
+                  Column(
+                    
+                    children: <Widget>[
+                      Text(
+                        widget.post.title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),                  Text(
+                        'Section: ${widget.post.section}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: widget.post.attachments.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final attachment = widget.post.attachments[index];
-                          return ListTile(
-                            title: Text(attachment.name),
-                            leading: Icon(Icons.attachment),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PDFView(
-                                    filePath: attachment.url,
-                                  ),
-                                ),
+                      Text(
+                        widget.post.description,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                
+                const Divider(),
+                if (widget.post.attachments.isNotEmpty)
+                  Expanded(
+                    child: Column(
+                      children: <Widget>[
+                        const Text(
+                          'Attachments',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: widget.post.attachments.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final attachment = widget.post.attachments[index];
+                              return ListTile(
+                                title: Text(attachment.name),
+                                leading: const Icon(Icons.attachment),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PDFView(
+                                        filePath: attachment.url,
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                Expanded(
+                  child: Column(
+                    children: [
+                        ListTile(
+                          title: Text(
+                            'Comments (${widget.post.comments.length})',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.post.comments.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(widget.post.comments[index]),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ListTile(
-              title: Text(
-                'Comments (${widget.post.comments.length})',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                      
+                    ],
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.post.comments.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(widget.post.comments[index]),
-                  );
-                },
-              ),
-            ),
-          ],
+                
+              ],
+            
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddCommentDialog(context),
-        child: Icon(Icons.comment),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddCommentDialog(context),
+          child: const Icon(Icons.comment),
+        ),
       ),
     );
   }
