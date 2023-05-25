@@ -7,9 +7,9 @@ import 'package:parafacile/views/etudiant_body.dart';
 import 'package:parafacile/views/professeur_body.dart';
 
 class ClassroomItem extends StatefulWidget {
-  ClassroomItem({required this.title, required this.classDescription});
-   String? title;
-   String? classDescription;
+  const ClassroomItem({super.key, required this.title, required this.classDescription});
+   final String? title;
+   final String? classDescription;
 
 
   @override

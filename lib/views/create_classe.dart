@@ -49,7 +49,6 @@ class _CreateClasseState extends State<CreateClasse> {
       });
     } else {}
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

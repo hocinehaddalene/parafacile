@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
@@ -12,14 +16,17 @@ class AddCourse extends StatefulWidget {
 }
 
 class _AddCourseState extends State<AddCourse> {
-  String? niveaudropdownValue = "1ere anne";
-
+  String? courseName;
+  String? courseDescription;
   String? selectedNiveau;
-
-  String? specialitedropdownValue = "ISP";
-
   String? Selectedspecialite;
+  String? niveaudropdownValue = "1ere anne";
+  String? specialitedropdownValue = "ISP";
+  PlatformFile? pickedFile;
+  UploadTask? uploadTask;
 
+  TextEditingController courseNameController = TextEditingController();
+  TextEditingController DescriptionController = TextEditingController();
   TextEditingController dateInput = TextEditingController();
 
   void niveauOnChanged(String? selectedvalue) {
@@ -27,7 +34,6 @@ class _AddCourseState extends State<AddCourse> {
       setState(() {
         niveaudropdownValue = selectedvalue;
         selectedNiveau = niveaudropdownValue;
-        print(niveaudropdownValue);
       });
     } else {}
   }
@@ -42,6 +48,21 @@ class _AddCourseState extends State<AddCourse> {
     } else {}
   }
 
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    setState(() {
+      pickedFile =  result.files.first;
+    });
+  }
+  Future uploadData() async {
+    final path = 'files/${pickedFile!.name}';
+    final file = File(pickedFile!.path!);
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadTask = ref.putFile(file);
+    final snapshot = await  uploadTask!.whenComplete((){});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +86,18 @@ class _AddCourseState extends State<AddCourse> {
                   const SizedBox(
                     height: 50,
                   ),
-                  CustomTextField(labelText: "Nom du cours"),
                   CustomTextField(
+                    labelText: "Nom du cours",
+                    controller: courseNameController,
+                    onChange: (val) {
+                      courseName = val;
+                    },
+                  ),
+                  CustomTextField(
+                    controller: DescriptionController,
+                    onChange: (val) {
+                      courseDescription = val;
+                    },
                     labelText: "Description du cours",
                     maxLines: 4,
                   ),
@@ -154,12 +185,25 @@ class _AddCourseState extends State<AddCourse> {
                       ),
                     ],
                   ),
-                  CustomTextField(
-                    labelText: "Ajouter un attachement",
-                    prefixIcon: Icon(Icons.attach_file),
-                    prefixIconColor: Colors.white,
-                    readOnly: true,
+                  CustomButton(
+                    backgroundColor: kGreenColor,
+                    onPressed: selectFile,
+                    title: 'Choisir fichier',
+                    textColor: kBackgroundColor,
                   ),
+                  Card(
+                    elevation: 5,
+                    child: Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            pickedFile?.name ?? "le nom de fichier",
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                  
                   const SizedBox(
                     height: 50,
                   ),
@@ -167,7 +211,7 @@ class _AddCourseState extends State<AddCourse> {
                       title: "Ajouter Cour",
                       textColor: kBackgroundColor,
                       backgroundColor: kGreenColor,
-                      onPressed: () {})
+                      onPressed: uploadData)
                 ],
               ),
             ),

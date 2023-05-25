@@ -26,7 +26,8 @@ class Classroom {
       'description': classDescription,
       'niveau': selectedNiveau,
       'specialite': Selectedspecialite,
-      'idProfesseur': CurrentUserId
+      'idProfesseur': CurrentUserId,
+      'id' : classReference.doc().id
     });
   }
 

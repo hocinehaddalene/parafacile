@@ -12,6 +12,8 @@ import 'etudiant.dart';
 
 class Login extends StatefulWidget {
   Login({super.key});
+    bool isLoading = false;
+
 
   @override
   State<Login> createState() => _LoginState();
@@ -21,7 +23,6 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,16 +71,22 @@ class _LoginState extends State<Login> {
                               // you'd often call a server or save the information in a database.
                              
                                 setState(() {
+                              widget.isLoading = true;
                                   signIn(
                                 emailController.text, passwordController.text);
                                 }); 
-                                
-                             
                             }
                           }),
+                            
                     )
-                  ])))
+                  ]))),
+       
+           Visibility(child:  Padding(
+             padding: const EdgeInsets.all(8.0),
+             child: const CircularProgressIndicator(),),
+           visible: widget.isLoading,)
         ],
+        
       ),
     );
   }
@@ -115,7 +122,6 @@ class _LoginState extends State<Login> {
   void signIn(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       try {
-         
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,

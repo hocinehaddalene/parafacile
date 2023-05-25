@@ -13,7 +13,7 @@ class ProfesseurBody extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title:Text("Professeur"),
+        title:const Text("Professeur"),
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -31,7 +31,6 @@ class ProfesseurBody extends StatelessWidget {
           ),
           onPressed: () {
             showModalBottomSheet(
-
                 context: context,
                 builder: (context) {
                   return Container(

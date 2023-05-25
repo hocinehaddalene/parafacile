@@ -14,8 +14,10 @@ CustomTextField(
       this.maxLines,
       this.readOnly = false,
       this.onTap,
-      this.onChange
+      this.onChange,
+      this.initialValue
       });
+   String? initialValue;   
    String? labelText;
    void Function(String?)? onSaved;
    bool obscureText;
@@ -38,6 +40,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0),
       child: TextFormField(
+        initialValue: widget.initialValue,
         onChanged: widget.onChange,
         readOnly: widget.readOnly!,
         maxLines: widget.maxLines,
@@ -60,7 +63,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
               setState(() {
               widget.obscureText = !widget.obscureText;
               });
-
             },
             child: Icon(
               widget.icon,

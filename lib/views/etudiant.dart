@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,38 +16,27 @@ class _EtudiantState extends State<Etudiant> {
   late String? niveau;
   late String? specialite;
 
-  Future<String?> getNiveau() async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getData() async {
     final DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
-    final String? fieldValue = snapshot.get('niveau');
+    final String? fieldValue = await snapshot.get('niveau');
+    final String? fieldSpecialiteValue = await snapshot.get('specialite');
+    specialite = fieldSpecialiteValue;
     niveau = fieldValue;
-    print(niveau);
-    setState(() {});
-    return fieldValue;
-  }
 
-  Future<String?> getSpecialite() async {
-    final DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+    return await FirebaseFirestore.instance
+        .collection('Classes')
+        .where('niveau', isEqualTo: niveau).where('specialite', isEqualTo: specialite)
         .get();
-    final String? fieldValue = snapshot.get('specialite');
-    specialite = fieldValue;
-    print(specialite);
-    return fieldValue;
   }
 
-  Query<Map<String, dynamic>> get ClassesCheck => FirebaseFirestore.instance
-      .collection('Classes')
-      .where('niveau', isEqualTo: niveau);
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getNiveau();
-      getSpecialite();
+      getData();
     });
 
     super.initState();
@@ -58,15 +48,15 @@ class _EtudiantState extends State<Etudiant> {
         appBar: AppBar(
           title: const Text("Etudiant"),
         ),
-        body: StreamBuilder(
-            stream: ClassesCheck.snapshots(),
+        body: FutureBuilder(
+            future: getData(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Text("has error with data");
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -83,26 +73,6 @@ class _EtudiantState extends State<Etudiant> {
             }));
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -124,12 +94,11 @@ class _EtudiantState extends State<Etudiant> {
 //    var ref = FirebaseFirestore.instance
 //       .collection('users')
 //       .doc(FirebaseAuth.instance.currentUser!.uid).get();
-      
 
 //   late var niveauValue = ref.then((value) async {
-    
+
 //        niveau = await value.get('niveau');
-   
+
 //   });
 //   late var specialiteValue = ref.then((value) async{
 //     specialite =await value.get('specialite');
