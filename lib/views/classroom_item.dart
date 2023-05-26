@@ -7,9 +7,17 @@ import 'package:parafacile/views/etudiant_body.dart';
 import 'package:parafacile/views/professeur_body.dart';
 
 class ClassroomItem extends StatefulWidget {
-  const ClassroomItem({super.key, required this.title, required this.classDescription});
+  ClassroomItem({
+    Key? key,
+    this.title,
+    this.classDescription,
+    this.posts,
+    this.id,
+  }) : super(key: key);
    final String? title;
    final String? classDescription;
+   List<dynamic>? posts;
+   String? id;
 
 
   @override
@@ -70,14 +78,14 @@ class _ClassroomItemState extends State<ClassroomItem> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ProfesseurBody(),
+              builder: (context) =>  ProfesseurBody(posts: widget.posts,id: widget.id,),
             ),
           );
         } else {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const EtudiantBody(),
+              builder: (context) =>  EtudiantBody(posts: widget.posts,id: widget.id,),
             ),
           );
         }

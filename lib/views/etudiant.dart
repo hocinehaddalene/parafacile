@@ -47,6 +47,12 @@ class _EtudiantState extends State<Etudiant> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Etudiant"),
+          actions: [
+            IconButton(onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            }, icon:Icon(Icons.logout_outlined,),)
+          ],
         ),
         body: FutureBuilder(
             future: getData(),

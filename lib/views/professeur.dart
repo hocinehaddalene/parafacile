@@ -22,15 +22,14 @@ class _ProfesseurState extends State<Professeur> {
       .collection('Classes')
       .where('idProfesseur', isEqualTo: CurrentUserId);
 
-   getClasses() async {
+  getClasses() async {
     try {
-    var responsebody = await ClassesProfesseur.get();
-    responsebody.docs.forEach((element) {
-     setState(() {
-       ClassroomItems.add(element.data()); 
-     });
-      
-    });
+      var responsebody = await ClassesProfesseur.get();
+      responsebody.docs.forEach((element) {
+        setState(() {
+          ClassroomItems.add(element.data());
+        });
+      });
     } catch (e) {
       return e;
     }
@@ -38,67 +37,65 @@ class _ProfesseurState extends State<Professeur> {
     print(ClassroomItems);
   }
 
-@override
+  @override
   void initState() {
-    
     // TODO: implement initState
     getClasses();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Professeur"),
-      ),
-      floatingActionButton: FloatingActionButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          backgroundColor: Colors.white,
-          child: Icon(
-            Icons.add,
-            color: Color.fromARGB(255, 219, 26, 26),
-            size: 29,
-          ),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CreateClasse();
-            }));
-          }),
-
-
-          body:StreamBuilder(
+        appBar: AppBar(
+          title: Text("Professeur"),
+          actions: [
+            IconButton(onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            }, icon:Icon(Icons.logout_outlined,),)
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100)),
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.add,
+              color: Color.fromARGB(255, 219, 26, 26),
+              size: 29,
+            ),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return CreateClasse();
+              }));
+            }),
+        body: StreamBuilder(
             stream: ClassesProfesseur.snapshots(),
-            builder: (context,snapshot) {
-             
-              
-              if(snapshot.hasError) {
-                return Text("has error with data") ;  
-              } 
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text("has error with data");
+              }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
-              } else {
-                
-              }
-              if(snapshot.hasData) {
-                
-                
+              } else {}
+              if (snapshot.hasData) {
                 return ListView.builder(
-                  itemCount: snapshot.data!.docs!.length,
-                  itemBuilder: (context,i) {
-                    // ignore: unrelated_type_equality_checks
+                    itemCount: snapshot.data!.docs!.length,
+                    itemBuilder: (context, i) {
 
-        return ClassroomItem(title: "${snapshot.data?.docs[i].data()['className']}", classDescription: "${snapshot.data?.docs[i].data()['description']}");
-
-
-
-                });
+                      return ClassroomItem(
+                        title: "${snapshot.data?.docs[i].data()['className']}",
+                        classDescription:
+                            "${snapshot.data?.docs[i].data()['description']}",
+                        posts: ["${snapshot.data?.docs[i].data()['posts']}"],
+                        id: "${snapshot.data?.docs[i].data()['id']}",
+                      );
+                    });
               }
               return Text("loading....");
-            
-
-            }) );
+            }));
   }
 }
 // ListView.builder(

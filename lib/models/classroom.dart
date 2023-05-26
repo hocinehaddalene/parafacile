@@ -14,20 +14,23 @@ class Classroom {
       FirebaseFirestore.instance.collection("Classes");
   CollectionReference studentReference =
       FirebaseFirestore.instance.collection("Students");
-
   Future<void>? addClass(
       String? className,
       String? classDescription,
       String? selectedNiveau,
       String? Selectedspecialite,
-      String? CurrentUserId) async {
+      String? CurrentUserId,
+      String nomProf
+      ) async {
     return await classReference.doc(className).set({
       'className': className,
       'description': classDescription,
       'niveau': selectedNiveau,
       'specialite': Selectedspecialite,
       'idProfesseur': CurrentUserId,
-      'id' : classReference.doc().id
+      'id' : classReference.doc().id,
+      'nom' : nomProf,
+      
     });
   }
 

@@ -220,8 +220,7 @@ class _RegisterBodyState extends State<RegisterBody> {
                       backgroundColor: const Color(0xff8EE5DB),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a snackbar. In the real world,
-                          // you'd often call a server or save the information in a database.
+
 
                           signUp(
                               emailController.text,

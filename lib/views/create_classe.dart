@@ -9,13 +9,13 @@ import 'package:parafacile/widgets/custom_text_field.dart';
 class CreateClasse extends StatefulWidget {
   CreateClasse({super.key});
 
+
   @override
   State<CreateClasse> createState() => _CreateClasseState();
 }
 
 class _CreateClasseState extends State<CreateClasse> {
   final formKey = GlobalKey<FormState>();
-
   TextEditingController classNameController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
 
@@ -23,9 +23,31 @@ class _CreateClasseState extends State<CreateClasse> {
   var CurrentUserId = FirebaseFirestore.instance
       .collection('users')
       .doc(FirebaseAuth.instance.currentUser!.uid).id;
+
+      Future<void> getNomPrenom() async {
+
+    var snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(CurrentUserId)
+        .get();
+
+    if (snapshot.exists) {
+      var data = snapshot.data() as Map<String, dynamic>;
+      String nom =await data['nom'];
+      String prenom = await data['prenom'];
+      setState(() {
+        nomComplet = "$nom $prenom";
+        print("le nom complet es $nomComplet");
+      });
+      
+}   
+      }
+
   String? className;
   String? classDescription;
   String? selectedNiveau;
+  late String nomComplet;
+
   String? Selectedspecialite;
   String? niveaudropdownValue = "1ere anne";
   String? specialitedropdownValue = "ISP";
@@ -39,6 +61,7 @@ class _CreateClasseState extends State<CreateClasse> {
       });
     } else {}
   }
+  
 
   void specialiteOnChanged(String? selectedvalue) {
     if (selectedvalue is String) {
@@ -48,6 +71,13 @@ class _CreateClasseState extends State<CreateClasse> {
         print(specialitedropdownValue);
       });
     } else {}
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    
+     getNomPrenom(); 
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {
@@ -185,7 +215,7 @@ class _CreateClasseState extends State<CreateClasse> {
                     backgroundColor: kGreenColor,
                 onPressed: () async {
                         if (formKey.currentState!.validate())  {
-                          await Classroom().addClass(className, classDescription, selectedNiveau, Selectedspecialite,CurrentUserId);
+                          await Classroom().addClass(className, classDescription, selectedNiveau, Selectedspecialite,CurrentUserId,nomComplet);
                           Navigator.of(context).pop();
                         }
                       },)
