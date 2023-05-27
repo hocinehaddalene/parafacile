@@ -7,9 +7,7 @@ class Classroom {
   String? classDescription;
   String? selectedNiveau;
   String? Selectedspecialite;
-
   Classroom();
-
   CollectionReference classReference =
       FirebaseFirestore.instance.collection("Classes");
   CollectionReference studentReference =
@@ -33,7 +31,6 @@ class Classroom {
       
     });
   }
-
   Future getClasses(
       String? className,
       String? classDescription,

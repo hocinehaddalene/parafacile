@@ -6,24 +6,19 @@ import 'package:parafacile/widgets/custom_button.dart';
 import 'add_anouncement.dart';
 import 'add_course.dart';
 import '../widgets/classroom_post.dart';
+import 'chat_screen.dart';
 
-class 
-EtudiantBody extends StatefulWidget {
-  
-EtudiantBody({this.posts, this.id});
-  List<dynamic>? posts;
-  String? id;
-  String? desc;
-  
+class EtudiantBody extends StatefulWidget {
+   EtudiantBody({super.key, this.posts,   required this.id,this.desc});
+  final List<dynamic>? posts;
+  late String id;
+  final String? desc;
 
- 
   @override
-  State<
-EtudiantBody> createState() => _EtudiantBodyState();
+  State<EtudiantBody> createState() => _EtudiantBodyState();
 }
 
-class _EtudiantBodyState extends State<
-EtudiantBody> {
+class _EtudiantBodyState extends State<EtudiantBody> {
   String? nomComplet;
   String? nomPrefesseur;
   Future<List<Map<String, dynamic>>> getPosts() async {
@@ -48,9 +43,10 @@ EtudiantBody> {
   }
 
   Future<void> getNomPrenom() async {
-      var CurrentUserId = FirebaseFirestore.instance
-      .collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid).id;
+    var CurrentUserId = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .id;
     var snapshot = await FirebaseFirestore.instance
         .collection("users")
         .doc(CurrentUserId)
@@ -58,7 +54,7 @@ EtudiantBody> {
 
     if (snapshot.exists) {
       var data = snapshot.data() as Map<String, dynamic>;
-      String nom =await data['nom'];
+      String nom = await data['nom'];
       String prenom = await data['prenom'];
       setState(() {
         nomComplet = "$nom $prenom";
@@ -66,17 +62,16 @@ EtudiantBody> {
       });
     }
   }
-Future<void> getProfesseurName() async {
 
+  Future<void> getProfesseurName() async {
     var snapshot = await FirebaseFirestore.instance
         .collection("Classes")
-        .where('is', isEqualTo: widget.id)
+        .where('id', isEqualTo: widget.id)
         .get();
-if (snapshot.docs.length >= 0) {
-   nomPrefesseur = await snapshot.docs[0].data()['nom'];
-  print('Field value: $nomPrefesseur');
-}
-
+    if (snapshot.docs.length >= 0) {
+      nomPrefesseur = await snapshot.docs[0].data()['nom'];
+      print('Field value: $nomPrefesseur');
+    }
   }
 
   void initState() {
@@ -84,7 +79,7 @@ if (snapshot.docs.length >= 0) {
     getNomPrenom();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    getPosts();
+      getPosts();
     });
 
     super.initState();
@@ -95,12 +90,19 @@ if (snapshot.docs.length >= 0) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text("Les publications"),
+          title: const Text("Publication"),
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ChatScreen(
+                        id: widget.id,
+                      );
+                    }));
+                  },
                   icon: Icon(
                     Icons.call,
                     color: kGreenColor,
@@ -108,39 +110,44 @@ if (snapshot.docs.length >= 0) {
             )
           ],
         ),
-        
-     body:  FutureBuilder(
-   future: getPosts(),
-       builder: (context, snapshot) {
-       if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-       }
+        body: FutureBuilder(
+          future: getPosts(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        if (snapshot.hasError) {
-         return Text('Error: ${snapshot.error}');
-         }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-         if (snapshot.hasData)  {
-           List<Map<String, dynamic>> posts  =
-                snapshot.data as List<Map<String, dynamic>>;
+            if (snapshot.hasData) {
+              List<Map<String, dynamic>> posts =
+                  snapshot.data as List<Map<String, dynamic>>;
 
-          return ListView.builder(
-          itemCount: posts.length,
-             itemBuilder: (context, index) {
-            final post = posts[index];
-           final nomCours = post['nomCours'] as String;
-            final description = post['description'] as String;
-            final urlAttach = post['urlAttach'] as String;
+              return ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  final nomCours = post['nomCours'] as String;
+                  final description = post['description'] as String;
+                  final urlAttach = post['urlAttach'] as String;
 
-           return ClassroomPostWidget(authorName: nomPrefesseur!, postTitle: nomCours, commentCount: 0,description: description,urlAttach: urlAttach,);
-        },
-     );
-    }
+                  return ClassroomPostWidget(
+                    id: widget.id,
+                    authorName: nomPrefesseur!,
+                    postTitle: nomCours,
+                    commentCount: 0,
+                    description: description,
+                    urlAttach: urlAttach,
+                  );
+                },
+              );
+            }
 
-    return Text('No posts available.');
-   },
-)
-    );
+            return const Text('No posts available.');
+          },
+        ));
   }
 }
 

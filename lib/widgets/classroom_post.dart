@@ -8,6 +8,7 @@ class ClassroomPostWidget extends StatefulWidget {
   int? commentCount;
   String? description;
   String? urlAttach;
+  late String? id;
 
   ClassroomPostWidget({
     required this.authorName,
@@ -15,6 +16,7 @@ class ClassroomPostWidget extends StatefulWidget {
     this.commentCount,
     this.description,
     this.urlAttach,
+    this.id
   });
 
   @override
@@ -27,17 +29,16 @@ class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return PostDetails(
+          return PostDetails(id: widget.id,
             post: Post(
                 title: widget.postTitle,
                 description: widget.description!,
-                section: "pharmacie",
                 attachments: <Attachment>[
                   Attachment(
                       name: "tapper ici pour voir votre attachement",
                       url: widget.urlAttach!)
                 ],
-                comments: []),
+                comments: [],),
           );
         }));
       },

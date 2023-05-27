@@ -10,10 +10,11 @@ import 'add_course.dart';
 import '../widgets/classroom_post.dart';
 
 class ProfesseurBody extends StatefulWidget {
-  ProfesseurBody({this.posts, this.id});
+  ProfesseurBody({this.posts, this.id, this.commentText});
   List<dynamic>? posts;
   String? id;
   String? desc;
+  String? commentText;
   
 
  
@@ -175,7 +176,7 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
             final description = post['description'] as String;
             final urlAttach = post['urlAttach'] as String;
 
-           return ClassroomPostWidget(authorName: nomComplet!, postTitle: nomCours, commentCount: 0,description: description,urlAttach: urlAttach,);
+           return ClassroomPostWidget(authorName: nomComplet!, postTitle: nomCours, commentCount: 0,description: description,urlAttach: urlAttach, id: widget.id!, );
         },
      );
     }

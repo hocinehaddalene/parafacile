@@ -13,11 +13,13 @@ class ClassroomItem extends StatefulWidget {
     this.classDescription,
     this.posts,
     this.id,
+    this.NomProfesseur
   }) : super(key: key);
    final String? title;
    final String? classDescription;
    List<dynamic>? posts;
-   String? id;
+   final String? id;
+   final String? NomProfesseur;
 
 
   @override
@@ -54,7 +56,7 @@ class _ClassroomItemState extends State<ClassroomItem> {
               ),
               Padding(padding: EdgeInsets.only(bottom: 10)),
               Text(
-                "Professeur",
+                widget.NomProfesseur ?? "ProfesseurNom",
                 style: TextStyle(fontSize: 12),
               )
             ],
@@ -65,7 +67,7 @@ class _ClassroomItemState extends State<ClassroomItem> {
   }
 
   route() {
-    print("teh widjet is tapped");
+    print("the widget is tapped");
 
     User? user = FirebaseAuth.instance.currentUser;
     var kk = FirebaseFirestore.instance
@@ -78,14 +80,14 @@ class _ClassroomItemState extends State<ClassroomItem> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  ProfesseurBody(posts: widget.posts,id: widget.id,),
+              builder: (context) =>  ProfesseurBody(posts: widget.posts, id: widget.id,),
             ),
           );
         } else {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  EtudiantBody(posts: widget.posts,id: widget.id,),
+              builder: (context) =>  EtudiantBody(posts: widget.posts,id: widget.id!,),
             ),
           );
         }

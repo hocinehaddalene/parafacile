@@ -49,7 +49,6 @@ class _AddCourseState extends State<AddCourse> {
           }
         ])
       });
-
       print('Post added to class successfully!');
     } catch (error) {
       print('Error adding post to class: $error');
@@ -160,7 +159,7 @@ class _AddCourseState extends State<AddCourse> {
                             await uploadData();
                             addPostToClass(widget.id);
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                              return ProfesseurBody(id: widget.id,);
+                              return ProfesseurBody(id: widget.id);
                               }));
 
                           } catch (e) {

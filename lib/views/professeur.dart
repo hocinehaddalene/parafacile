@@ -48,7 +48,7 @@ class _ProfesseurState extends State<Professeur> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Professeur"),
+          title: Text("Espace Professeur"),
           actions: [
             IconButton(onPressed: () {
               FirebaseAuth.instance.signOut();
@@ -91,6 +91,7 @@ class _ProfesseurState extends State<Professeur> {
                             "${snapshot.data?.docs[i].data()['description']}",
                         posts: ["${snapshot.data?.docs[i].data()['posts']}"],
                         id: "${snapshot.data?.docs[i].data()['id']}",
+                        NomProfesseur:  "${snapshot.data?.docs[i].data()['nom']}"  ,
                       );
                     });
               }

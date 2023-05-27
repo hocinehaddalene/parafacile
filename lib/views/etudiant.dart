@@ -46,7 +46,7 @@ class _EtudiantState extends State<Etudiant> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Etudiant"),
+          title: const Text("Espace Etudiant"),
           actions: [
             IconButton(onPressed: () {
               FirebaseAuth.instance.signOut();
@@ -72,7 +72,11 @@ class _EtudiantState extends State<Etudiant> {
                           title:
                               "${snapshot.data?.docs[i].data()['className']}",
                           classDescription:
-                              "${snapshot.data?.docs[i].data()['description']}");
+                              "${snapshot.data?.docs[i].data()['description']}",
+                        posts: ["${snapshot.data?.docs[i].data()['posts']}"],
+                        id: "${snapshot.data?.docs[i].data()['id']}",
+                        NomProfesseur:  "${snapshot.data?.docs[i].data()['nom']}" 
+                        );
                     });
               }
               return const Text("loading....");

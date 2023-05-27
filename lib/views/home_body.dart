@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:parafacile/views/home_anonymous.dart';
 import 'package:parafacile/views/login.dart';
 import 'package:parafacile/views/register.dart';
 
@@ -44,9 +46,20 @@ class HomeBody extends StatelessWidget {
               textColor: Colors.white,
               backgroundColor: const Color(0xff595773),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>  Login()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Login()));
               }),
+          const SizedBox(height: 20),
+          TextButton(
+              onPressed: () {
+                FirebaseAuth.instance.signInAnonymously();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) =>  HomeAnonoymous()));
+              },
+              child: Text(
+                "Continuer en tant que anonyme",
+                style: TextStyle(color: Colors.white),
+              ))
         ]);
   }
 }
