@@ -80,7 +80,7 @@ class _ClassroomItemState extends State<ClassroomItem> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>  ProfesseurBody(posts: widget.posts, id: widget.id,),
+              builder: (context) =>  ProfesseurBody(posts: widget.posts, id: widget.id,title: widget.title,),
             ),
           );
         } else {

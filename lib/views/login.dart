@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
+import 'package:parafacile/views/admin.dart';
 import 'package:parafacile/views/professeur.dart';
 import 'package:parafacile/widgets/custom_button.dart';
 
@@ -21,8 +22,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +106,7 @@ class _LoginState extends State<Login> {
             builder: (context) =>  const Professeur(),
           ),
         );
-        }else{
+        }else if ((documentSnapshot.get('role') == "Etudiant") ){
           Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -113,6 +114,15 @@ class _LoginState extends State<Login> {
           ),
         );
         }
+        else if ((documentSnapshot.get('role') == "Admin") ){
+          Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>  Admin(),
+          ),
+        );
+        }
+        
       } else {
         print('Document does not exist on the database');
       }

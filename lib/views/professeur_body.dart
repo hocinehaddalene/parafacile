@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
 import 'package:parafacile/views/chat_screen.dart';
+import 'package:parafacile/views/add_quiz.dart';
+import 'package:parafacile/views/quiz_view.dart';
 import 'package:parafacile/widgets/custom_button.dart';
 
 import 'add_anouncement.dart';
@@ -10,8 +12,9 @@ import 'add_course.dart';
 import '../widgets/classroom_post.dart';
 
 class ProfesseurBody extends StatefulWidget {
-  ProfesseurBody({this.posts, this.id, this.commentText});
+  ProfesseurBody({this.posts, this.id, this.commentText,this.title});
   List<dynamic>? posts;
+  String? title;
   String? id;
   String? desc;
   String? commentText;
@@ -58,14 +61,17 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
       var data = snapshot.data() as Map<String, dynamic>;
       String nom =await data['nom'];
       String prenom = await data['prenom'];
+      
       setState(() {
         nomComplet = "$nom $prenom";
         print("le nom complet es $nomComplet");
       });
     }
   }
+  @override
   void initState() {
     getNomPrenom();
+    print(widget.title);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
     getPosts();
@@ -81,6 +87,7 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
           centerTitle: false,
           title: Text("Les publications"),
           actions: [
+
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
@@ -90,10 +97,23 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
                     }));
                   },
                   icon: Icon(
-                    Icons.call,
+                    Icons.message_rounded,
                     color: kGreenColor,
                   )),
-            )
+            ),
+               Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                      return QuizView(title:widget.title);
+                    }));
+                  },
+                  icon: Icon(
+                    Icons.quiz_rounded,
+                    color: kGreenColor,
+                  )),
+            ),        
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -140,11 +160,11 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
                                 onPressed: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return AddAnouncement();
+                                    return AddQuiz(title: widget.title,);
                                   }));
                                 },
                                 child: const Text(
-                                  "Ajouter une Anouncement",
+                                  "Ajouter une QUIZZ",
                                   style: TextStyle(fontSize: 16),
                          ),
                           ))

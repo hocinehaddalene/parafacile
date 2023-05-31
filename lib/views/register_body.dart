@@ -25,6 +25,9 @@ class _RegisterBodyState extends State<RegisterBody> {
   final TextEditingController firstName = TextEditingController();
   final TextEditingController secondName = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController cleController = TextEditingController();
+  String? key;
+
   String? dropdownValue = "Etudiant";
   String? role;
   String? selectedNiveau;
@@ -90,6 +93,16 @@ class _RegisterBodyState extends State<RegisterBody> {
                     obscureText: true,
                     maxLines: 1,
                     icon: Icons.lock,
+                  ),
+                  CustomTextField(
+                    labelText: "Saisair la clé",
+                    icon: Icons.key_off_outlined,
+                    controller: cleController,
+                    onChange: (val) {
+                      setState(() {
+                        key = val;
+                      });
+                    },
                   ),
                   Row(
                     children: [
@@ -220,16 +233,59 @@ class _RegisterBodyState extends State<RegisterBody> {
                       backgroundColor: const Color(0xff8EE5DB),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          FirebaseFirestore.instance
+                              .collection("clé")
+                              .where('clé', isEqualTo: key)
+                              .where('compte', isEqualTo: "libre")
+                              .get()
+                              .then((QuerySnapshot snapshot) {
+                            if (snapshot.docs.isNotEmpty) {
+                              print('Value exists in the collection.');
+                              FirebaseFirestore.instance
+                                  .collection("clé")
+                                  .where("clé", isEqualTo: key)
+                                  .get()
+                                  .then((QuerySnapshot snapshot) {
+                                if (snapshot.docs.isNotEmpty) {
+                                  // Retrieve the first matching document
+                                  DocumentSnapshot document = snapshot.docs[0];
 
+                                  FirebaseFirestore.instance
+                                      .collection("clé")
+                                      .doc(document.id)
+                                      .update({'compte': "réservé"}).then(
+                                          (value) {
+                                    print('Field value updated successfully.');
+                                    signUp(
+                                        emailController.text,
+                                        passwordController.text,
+                                        secondName.text,
+                                        firstName.text,
+                                        dropdownValue!,
+                                        selectedNiveau ?? "",
+                                        Selectedspecialite ?? "",
+                                        key!);
+                                  });
+                                }
+                              });
 
-                          signUp(
-                              emailController.text,
-                              passwordController.text,
-                              secondName.text,
-                              firstName.text,
-                              dropdownValue!,
-                              selectedNiveau ?? "",
-                              Selectedspecialite ?? "");
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                backgroundColor:
+                                    Color.fromARGB(255, 23, 187, 138),
+                                content: Text("clé ajouter avec succés"),
+                              ));
+
+                              // ...
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      backgroundColor:
+                                          Color.fromARGB(255, 255, 0, 0),
+                                      content: Text(
+                                          "la clé est déja utlisé par autre compte ou n'existe pas")));
+                            }
+                          });
                         }
                       })
                 ],
@@ -242,7 +298,7 @@ class _RegisterBodyState extends State<RegisterBody> {
   }
 
   void signUp(String email, String password, String nom, String prenom,
-      String role, String niveau, String specialite) async {
+      String role, String niveau, String specialite, String cle) async {
     const CircularProgressIndicator();
     if (_formKey.currentState!.validate()) {
       try {
@@ -250,7 +306,7 @@ class _RegisterBodyState extends State<RegisterBody> {
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) => {
                   postDetailsToFirestore(
-                      email, role, nom, prenom, niveau, specialite)
+                      email, role, nom, prenom, niveau, specialite, cle)
                 });
       } on FirebaseAuthException catch (t) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -262,7 +318,7 @@ class _RegisterBodyState extends State<RegisterBody> {
   }
 
   postDetailsToFirestore(String email, String role, String nom, String prenom,
-      String niveau, String specialite) async {
+      String niveau, String specialite, String cle) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = _auth.currentUser;
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
@@ -272,7 +328,8 @@ class _RegisterBodyState extends State<RegisterBody> {
       'nom': secondName.text,
       'prenom': firstName.text,
       'niveau': selectedNiveau,
-      'specialite': Selectedspecialite
+      'specialite': Selectedspecialite,
+      'cle': key
     });
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => Login()));

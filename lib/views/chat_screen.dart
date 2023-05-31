@@ -83,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 238, 238, 238),
+      backgroundColor: const Color.fromARGB(255, 238, 238, 238),
       appBar: AppBar(
         backgroundColor: kGreenColor,
         title: Row(
@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: ListView(
                       reverse: true,
                       padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+                          const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
                       children: messagesWidgets,
                     ),
                   );
@@ -240,24 +240,24 @@ class MessageLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
             "$nomComplet",
-            style: TextStyle(
+            style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 color: Color.fromARGB(255, 236, 166, 145),
                 fontSize: 12),
           ),
           Material(
               elevation: 6,
-              borderRadius:isMe? BorderRadius.only(
+              borderRadius:isMe? const BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   topLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30)) :
-                  BorderRadius.only(
+                  const BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                   bottomRight: Radius.circular(30)) ,
@@ -267,7 +267,7 @@ class MessageLine extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Text(
                   "$messageText",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
                 ),
               )),
         ],
