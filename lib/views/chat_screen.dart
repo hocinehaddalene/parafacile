@@ -83,14 +83,13 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 238, 238, 238),
+     // backgroundColor: const Color.fromARGB(255, 238, 238, 238),
       appBar: AppBar(
-        backgroundColor: kGreenColor,
         title: Row(
           children: [
             Image.asset('images/logo.png', height: 25),
             const SizedBox(width: 10),
-            const Text('MessageMe')
+            const Text('Espace Chat')
           ],
         ),
         actions: [

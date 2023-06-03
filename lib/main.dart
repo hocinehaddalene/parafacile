@@ -13,7 +13,9 @@ class paraFacile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(fontFamily: "Inter", useMaterial3: true),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: "Inter", useMaterial3: true),
       home: Home(),
     );
   }

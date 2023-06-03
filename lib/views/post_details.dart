@@ -1,10 +1,14 @@
-
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
 import 'package:parafacile/views/pdf_viewer.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:open_file/open_file.dart';
+
 
 class Attachment {
   String name;
@@ -32,14 +36,14 @@ class PostDetails extends StatefulWidget {
   String? newComment;
   late String? id;
 
-  PostDetails({super.key, required this.post,required this.id, this.newComment});
+  PostDetails(
+      {super.key, required this.post, required this.id, this.newComment});
 
   @override
   State<PostDetails> createState() => _PostDetailsState();
 }
 
 class _PostDetailsState extends State<PostDetails> {
-  
   Future<void> addPostToClass() async {
     try {
       // Get the document reference based on the 'id' field
@@ -52,16 +56,12 @@ class _PostDetailsState extends State<PostDetails> {
       var classRef = await snapshot.docs.first.reference;
 
       // Update the 'posts' array field
-      await classRef.update({
+      await classRef.set({
         'posts': FieldValue.arrayUnion([
-          
           {
-            
-        'comments': FieldValue.arrayUnion([ {
-          "text" : widget.newComment
-
-        }])
-            
+            'comments': FieldValue.arrayUnion([
+              {"text": widget.newComment}
+            ])
           }
         ])
       });
@@ -71,13 +71,11 @@ class _PostDetailsState extends State<PostDetails> {
       print('Error adding post to class: $error');
     }
   }
-  
 
   void _showAddCommentDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-
         return AlertDialog(
           title: const Text('Add Comment'),
           content: TextField(
@@ -93,6 +91,7 @@ class _PostDetailsState extends State<PostDetails> {
               onPressed: () {
                 if (widget.newComment!.isNotEmpty) {
                   widget.post.comments.add(widget.newComment!);
+                  addPostToClass();
                   Navigator.of(context).pop();
                 }
               },
@@ -103,20 +102,25 @@ class _PostDetailsState extends State<PostDetails> {
       },
     );
   }
+
   @override
   void initState() {
     addPostToClass();
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData(useMaterial3: true,
+      brightness: Brightness.dark),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Publication', style: TextStyle(color: Colors.white),),
-          backgroundColor: kBackgroundColor,
+          title: const Text(
+            'Publication',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -125,14 +129,13 @@ class _PostDetailsState extends State<PostDetails> {
               Column(
                 children: <Widget>[
                   Text(
-                    widget.post.title, 
+                    widget.post.title,
                     style: const TextStyle(
                       fontSize: 29,
                       color: Color.fromARGB(255, 24, 187, 187),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
                   Center(
                     child: Text(
                       widget.post.description,
@@ -146,18 +149,20 @@ class _PostDetailsState extends State<PostDetails> {
                 Expanded(
                   child: Card(
                     elevation: 5,
-                    
                     child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: const LinearGradient(
-                      colors: [Color.fromARGB(255, 39, 176, 123), Color.fromARGB(255, 0, 255, 170)],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                      stops: [0.4, 0.7],
-                      tileMode: TileMode.repeated,
-                    ),
-                  ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 39, 176, 123),
+                            Color.fromARGB(255, 0, 255, 170)
+                          ],
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          stops: [0.4, 0.7],
+                          tileMode: TileMode.repeated,
+                        ),
+                      ),
                       child: Column(
                         children: <Widget>[
                           const Text(
@@ -166,35 +171,42 @@ class _PostDetailsState extends State<PostDetails> {
                               fontSize: 23,
                               color: Color.fromARGB(255, 0, 0, 0),
                               fontWeight: FontWeight.bold,
-                              
                             ),
                           ),
                           Expanded(
                             child: ListView.builder(
                               itemCount: widget.post.attachments.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final attachment = widget.post.attachments[index];
+                                final attachment =
+                                    widget.post.attachments[index];
                                 return ListTile(
                                   title: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Material(
-                                      borderRadius: BorderRadius.circular(16),
-                                      color: Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(attachment.name, style: TextStyle(color: Color.fromARGB(255, 68, 68, 68)),),
-                                      )),
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.white,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            attachment.name,
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 68, 68, 68)),
+                                          ),
+                                        )),
                                   ),
-                                  leading: const Icon(Icons.attachment, color: Color.fromARGB(255, 7, 109, 168),),
+                                  leading: const Icon(
+                                    Icons.attachment,
+                                    color: Color.fromARGB(255, 7, 109, 168),
+                                  ),
                                   onTap: () {
-                                      
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                      return pdfviewer(url: attachment.url);
-                                    }));
-                                      
-                                      
-                                      
-                                      
+                                    print("${attachment.name}");
+                                    openFile(url:attachment.url, fileName: attachment.name);
+
+                                    // Navigator.push(context,
+                                    //     MaterialPageRoute(builder: (context) {
+                                    //   return pdfviewer(url: attachment.url);
+                                    // }));
                                   },
                                 );
                               },
@@ -240,4 +252,34 @@ class _PostDetailsState extends State<PostDetails> {
       ),
     );
   }
+}
+
+Future openFile({required String? url,required String? fileName}) async {
+  final file = await downloadFile(url, fileName);
+  if (file == null) return; 
+    
+   print(file.path);
+    OpenFile.open(file.path);
+  
+}
+Future<File?> downloadFile( String? url,String? fileName) async{
+
+ final appStorage = await getApplicationDocumentsDirectory(); 
+ final file = File('${appStorage.path}/$fileName');
+ final response = await Dio().get(url!,
+ 
+ options: Options(
+
+  responseType: ResponseType.bytes,
+  followRedirects: false,
+  receiveTimeout: 0
+  ));
+
+  final raf = file.openSync(mode: FileMode.write);
+  raf.writeFromSync(response.data);
+  await raf.close();
+
+  return file;
+
+
 }

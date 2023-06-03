@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
 import 'package:parafacile/views/post_details.dart';
@@ -8,15 +9,26 @@ class ClassroomPostWidget extends StatefulWidget {
   int? commentCount;
   String? description;
   String? urlAttach;
+  String fileName;
+  List<dynamic>? posts;
+  int? index;
   late String? id;
+  Map<String, dynamic>? post;
+  Function refreshPosts;
 
   ClassroomPostWidget({
     required this.authorName,
     required this.postTitle,
     this.commentCount,
     this.description,
-    this.urlAttach,
-    this.id
+    required this.urlAttach,
+    required this.fileName,
+    this.post,
+    this.posts,
+    this.id,
+    this.index,
+    required this.refreshPosts
+    
   });
 
   @override
@@ -24,9 +36,75 @@ class ClassroomPostWidget extends StatefulWidget {
 }
 
 class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
+
+  Future<void> deletePost(String id) async {
+    try {
+      // Get the document reference based on the 'id' field
+      var snapshot = await FirebaseFirestore.instance
+          .collection('Classes')
+          .where('id', isEqualTo: widget.id)
+          .get();
+
+      var classRef = await snapshot.docs.first.reference;
+      // Update the 'posts' array field
+      classRef.update({
+        'posts' : FieldValue.arrayRemove([widget.posts![widget.index!]])
+      });
+        
+      print('Post removed from successfully!');
+    } catch (error) {
+      print('Error removing post: $error');
+    }
+  }    
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: const Icon(Icons.delete_forever_sharp),
+          title: const Text('Confirmation'),
+          content: const SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Text('Êtes-vous sûr de vouloir supprimer cette classe ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Supprimer'),
+              onPressed: () async{
+ setState(() {
+                  deletePost(widget.id!);
+
+ });
+   await Future.delayed(Duration(milliseconds: 400)); // Add a small delay here
+
+                widget.refreshPosts();
+                   Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  @override
+  void initState() {
+    // TODO: implement initState    
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: _showMyDialog,
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return PostDetails(id: widget.id,
@@ -35,7 +113,7 @@ class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
                 description: widget.description!,
                 attachments: <Attachment>[
                   Attachment(
-                      name: "tapper ici pour voir votre attachement",
+                      name: widget.fileName,
                       url: widget.urlAttach!)
                 ],
                 comments: [],),
@@ -50,8 +128,7 @@ class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
               padding: const EdgeInsets.all(20.0),
               child: Text(
                 widget.postTitle,
-                style: TextStyle(
-                  color: kDarkGeenColor,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -60,7 +137,7 @@ class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 39.0),
               child: Text(
-                'Author: ${widget.authorName}',
+                'Professeur: ${widget.authorName}',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   color: Colors.grey[700],
@@ -81,8 +158,8 @@ class _ClassroomPostWidgetState extends State<ClassroomPostWidget> {
                       Icons.comment,
                       color: kBackgroundColor,
                     ),
-                    SizedBox(width: 5),
-                    Text('${widget.commentCount} Comments'),
+                    const SizedBox(width: 5),
+                    Text('${widget.commentCount} Comments', style: TextStyle(color: kBackgroundColor),),
                   ],
                 ),
               ),

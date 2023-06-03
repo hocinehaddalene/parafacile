@@ -86,6 +86,7 @@ class _ProfesseurState extends State<Professeur> {
                     itemBuilder: (context, i) {
 
                       return ClassroomItem(
+                        isProf: true,
                         title: "${snapshot.data?.docs[i].data()['className']}",
                         classDescription:
                             "${snapshot.data?.docs[i].data()['description']}",

@@ -69,6 +69,7 @@ class _EtudiantState extends State<Etudiant> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, i) {
                       return ClassroomItem(
+                        isProf: false,
                           title:
                               "${snapshot.data?.docs[i].data()['className']}",
                           classDescription:

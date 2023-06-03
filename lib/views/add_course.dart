@@ -24,6 +24,7 @@ class _AddCourseState extends State<AddCourse> {
   String? urlAttach;
   PlatformFile? pickedFile;
   UploadTask? uploadTask;
+  late String? name = pickedFile?.name; 
   // late Map<String,dynamic> posts =  {
   //   'nomCours' : courseName,
   //   'description' : courseDescription
@@ -45,7 +46,8 @@ class _AddCourseState extends State<AddCourse> {
           {
             'nomCours': courseName,
             'description': courseDescription,
-            'urlAttach': urlAttach
+            'urlAttach': urlAttach,
+            'filename' : name
           }
         ])
       });
@@ -154,8 +156,9 @@ class _AddCourseState extends State<AddCourse> {
                       backgroundColor: kGreenColor,
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
+                         CircularProgressIndicator.adaptive(value: 20,);
+
                           try  {
-                            const CircularProgressIndicator(value: 20,);
                             await uploadData();
                             addPostToClass(widget.id);
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {

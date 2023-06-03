@@ -4,23 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
 import 'package:parafacile/views/chat_screen.dart';
 import 'package:parafacile/views/add_quiz.dart';
+import 'package:parafacile/views/quiz_score.dart';
 import 'package:parafacile/views/quiz_view.dart';
 import 'package:parafacile/widgets/custom_button.dart';
-
 import 'add_anouncement.dart';
 import 'add_course.dart';
 import '../widgets/classroom_post.dart';
 
 class ProfesseurBody extends StatefulWidget {
-  ProfesseurBody({this.posts, this.id, this.commentText,this.title});
+  ProfesseurBody({this.posts, this.id, this.commentText, this.title});
   List<dynamic>? posts;
   String? title;
   String? id;
   String? desc;
   String? commentText;
-  
 
- 
   @override
   State<ProfesseurBody> createState() => _ProfesseurBodyState();
 }
@@ -47,11 +45,12 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
       return [];
     }
   }
+
   var CurrentUserId = FirebaseFirestore.instance
       .collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid).id;
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .id;
   Future<void> getNomPrenom() async {
-
     var snapshot = await FirebaseFirestore.instance
         .collection("users")
         .doc(CurrentUserId)
@@ -59,22 +58,24 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
 
     if (snapshot.exists) {
       var data = snapshot.data() as Map<String, dynamic>;
-      String nom =await data['nom'];
+      String nom = await data['nom'];
       String prenom = await data['prenom'];
-      
+
       setState(() {
         nomComplet = "$nom $prenom";
         print("le nom complet es $nomComplet");
       });
     }
   }
+
   @override
   void initState() {
+
     getNomPrenom();
     print(widget.title);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    getPosts();
+      getPosts();
     });
 
     super.initState();
@@ -82,18 +83,23 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
 
   @override
   Widget build(BuildContext context) {
+  void refreshPosts() {
+  setState(() {});
+  }
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text("Les publications"),
+          title: const Text("Les publications"),
           actions: [
-
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                      return ChatScreen(id: widget.id,);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ChatScreen(
+                        id: widget.id,
+                      );
                     }));
                   },
                   icon: Icon(
@@ -101,19 +107,20 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
                     color: kGreenColor,
                   )),
             ),
-               Padding(
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                      return QuizView(title:widget.title);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return QuizView(title: widget.title);
                     }));
                   },
                   icon: Icon(
                     Icons.quiz_rounded,
                     color: kGreenColor,
                   )),
-            ),        
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -160,128 +167,102 @@ class _ProfesseurBodyState extends State<ProfesseurBody> {
                                 onPressed: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return AddQuiz(title: widget.title,);
+                                    return AddQuiz(
+                                      title: widget.title,
+                                    );
                                   }));
                                 },
                                 child: const Text(
                                   "Ajouter une QUIZZ",
                                   style: TextStyle(fontSize: 16),
-                         ),
-                          ))
-                      ],
+                                ),
+                              ))
+                        ],
                       ),
-                );
-              });
-        }),
-     body:  FutureBuilder(
-   future: getPosts(),
-       builder: (context, snapshot) {
-       if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-       }
+                    );
+                  });
+            }),
+        body: Column(
+          
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return QuizScore(
+                    title: widget.title,
+                  );
+                }));
+              },
+              child: Container(
+                height: 85,
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color.fromARGB(255, 68, 0, 255),
+                    Color.fromARGB(255, 33, 1, 70),
+                  ],
+                )),
+                child: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Center(
+                    child: Text(
+                      "Vous pouvez ici consultez les résultat de votre quiz",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder(
+                stream: getPosts().asStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-        if (snapshot.hasError) {
-         return Text('Error: ${snapshot.error}');
-         }
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
 
-         if (snapshot.hasData)  {
-           List<Map<String, dynamic>> posts  =
-                snapshot.data as List<Map<String, dynamic>>;
+                  if (snapshot.hasData) {
+                    List<dynamic> posts =
+                        snapshot.data as List<Map<String, dynamic>>;
+                    return ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        final nomCours = post['nomCours'] as String;
+                        final description = post['description'] as String;
+                        final urlAttach = post['urlAttach'] as String;
+                        final name = post['filename'] as String;
 
-          return ListView.builder(
-          itemCount: posts.length,
-             itemBuilder: (context, index) {
-            final post = posts[index];
-           final nomCours = post['nomCours'] as String;
-            final description = post['description'] as String;
-            final urlAttach = post['urlAttach'] as String;
-
-           return ClassroomPostWidget(authorName: nomComplet!, postTitle: nomCours, commentCount: 0,description: description,urlAttach: urlAttach, id: widget.id!, );
-        },
-     );
-    }
-
-    return Text('No posts available.');
-   },
-)
-    );
+                        return ClassroomPostWidget(
+                          authorName: nomComplet!,
+                          postTitle: nomCours,
+                          commentCount: 0,
+                          description: description,
+                          urlAttach: urlAttach,
+                          id: widget.id!,
+                          fileName: name,
+                          posts: posts,
+                          post: post,
+                          index: index,
+                          refreshPosts: refreshPosts
+                        );
+                      },
+                    );
+                  }
+                  return const Text('No posts available.');
+                },
+              ),
+            )
+          ],
+        ));
   }
 }
-
-// class PostWidget extends StatelessWidget {
-//   final String authorName;
-//   final String description;
-
-//   const PostWidget({required this.authorName, required this.description});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListTile(
-//       title: Text(authorName),
-//       subtitle: Text(description),
-//     );
-//   }
-// }
-
-// class PostsList extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder(
-//       future: getPosts(),
-//       builder: (context, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return Center(child: CircularProgressIndicator());
-//         }
-
-//         if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         }
-
-//         if (snapshot.hasData) {
-//           List<Map<String, dynamic>> posts =
-//               snapshot.data as List<Map<String, dynamic>>;
-
-//           return ListView.builder(
-//             itemCount: posts.length,
-//             itemBuilder: (context, index) {
-//               final post = posts[index];
-//               final description = post['description'] as String;
-
-//               return ClassroomPostWidget(authorName: , postTitle: postTitle, commentCount: commentCount);
-//             },
-//           );
-//         }
-
-//         return Text('No posts available.');
-//       },
-//     );
-//   }
-
-//   Future<List<Map<String, dynamic>>> getPosts() async {
-//     try {
-//       var snapshot =
-//           await FirebaseFirestore.instance.collection('Classes').get();
-//       var classes = snapshot.docs.map((doc) => doc.data()).toList();
-
-//       var posts = <Map<String, dynamic>>[];
-//       for (var classData in classes) {
-//         var classPosts = classData['posts'] as List<dynamic>;
-//         posts.addAll(classPosts.cast<Map<String, dynamic>>());
-//       }
-
-//       return posts;
-//     } catch (error) {
-//       print('Error retrieving posts: $error');
-//       return [];
-//     }
-//   }
-// }
-
-// void main() {
-//   runApp(MaterialApp(
-//     home: Scaffold(
-//       appBar: AppBar(title: Text('Posts List')),
-//       body: PostsList(),
-//     ),
-//   ));
-// }

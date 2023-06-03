@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:parafacile/views/home.dart';
 import 'package:parafacile/views/score_show.dart';
 
 class QuizView extends StatelessWidget {
@@ -34,12 +36,37 @@ class _QuizScreenState extends State<QuizScreen> {
   late Timer _timer;
   int _timeRemaining = 15;
   List<String> _shuffledChoices = [];
+  String? nomComplet;
 
   @override
   void initState() {
     super.initState();
     fetchQuestions();
     startTimer();
+    getNomPrenom();
+  }
+
+  Future<void> getNomPrenom() async {
+    var CurrentUserId = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .id;
+
+    var snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(CurrentUserId)
+        .get();
+
+    if (snapshot.exists) {
+      var data = snapshot.data() as Map<String, dynamic>;
+      String nom = await data['nom'];
+      String prenom = await data['prenom'];
+
+      setState(() {
+        nomComplet = "$nom $prenom";
+        print("le nom complet es $nomComplet");
+      });
+    }
   }
 
   void fetchQuestions() async {
@@ -53,13 +80,12 @@ class _QuizScreenState extends State<QuizScreen> {
           snapshot.docs.map((doc) => Question.fromSnapshot(doc)).toList();
 
       _shuffledChoices = _questions[_currentQuestionIndex].shuffledChoices;
-
     });
   }
 
-  void startTimer() {
+  void startTimer() async {
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-      setState(() {
+      setState(()  {
         if (_timeRemaining > 0) {
           _timeRemaining--;
         } else {
@@ -68,17 +94,30 @@ class _QuizScreenState extends State<QuizScreen> {
           if (_currentQuestionIndex < _questions.length - 1) {
             _currentQuestionIndex++;
             _timeRemaining = 15; // Reset timer for the next question
-            _shuffledChoices = _questions[_currentQuestionIndex].shuffledChoices; // Update shuffled choices
+            _shuffledChoices = _questions[_currentQuestionIndex]
+                .shuffledChoices; // Update shuffled choices
             startTimer();
-          } else {
-            // Quiz ended, show score or navigate to another screen
-          }
+          }  else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return ScoreShow(
+          score: _score,
+          nomComplet: nomComplet,
+        );
+      }));
+      final snapshot =  _db
+          .collection('quizz')
+          .doc(widget.title)
+          .collection('notes')
+          .doc()
+          .set({"etudiant": nomComplet, "note": _score, "ajouter" : Timestamp.now()});
+    }
+  
         }
       });
     });
   }
 
-  void handleAnswer(String answer) {
+  void handleAnswer(String answer) async {
     final currentQuestion = _questions[_currentQuestionIndex];
     if (answer == currentQuestion.answer) {
       setState(() {
@@ -89,13 +128,21 @@ class _QuizScreenState extends State<QuizScreen> {
     if (_currentQuestionIndex < _questions.length - 1) {
       _currentQuestionIndex++;
       _timeRemaining = 15; // Reset timer for the next question
-      _shuffledChoices = _questions[_currentQuestionIndex].shuffledChoices; // Update shuffled choices
+      _shuffledChoices = _questions[_currentQuestionIndex]
+          .shuffledChoices; // Update shuffled choices
     } else {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return ScoreShow(score: _score,);
-
+        return ScoreShow(
+          score: _score,
+          nomComplet: nomComplet,
+        );
       }));
-
+      final snapshot = await _db
+          .collection('quizz')
+          .doc(widget.title)
+          .collection('notes')
+          .doc()
+          .set({"etudiant": nomComplet, "note": _score, "ajouter" : Timestamp.now()});
     }
   }
 

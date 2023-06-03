@@ -88,7 +88,7 @@ class _AddQuizState extends State<AddQuiz> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Veuillez ajouter des questions pour que l'étudiant repondre:", style: TextStyle(color: Colors.black,fontSize: 20,),),
+              Text("Veuillez ajouter des questions pour que l'étudiant repondre:", style: TextStyle(fontSize: 20,),),
               Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,

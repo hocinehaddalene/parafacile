@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ScoreShow extends StatefulWidget {
 
-  ScoreShow({required this.score});
+  ScoreShow({required this.score, required this.nomComplet});
     int score = 0;
+    String? nomComplet;
 
   @override
   _ScoreShowState createState() => _ScoreShowState();

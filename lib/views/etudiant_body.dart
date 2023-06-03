@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parafacile/constants.dart';
+import 'package:parafacile/views/quiz_view.dart';
 import 'package:parafacile/widgets/custom_button.dart';
 import 'add_anouncement.dart';
 import 'add_course.dart';
@@ -9,10 +10,12 @@ import '../widgets/classroom_post.dart';
 import 'chat_screen.dart';
 
 class EtudiantBody extends StatefulWidget {
-   EtudiantBody({super.key, this.posts,   required this.id,this.desc});
+  EtudiantBody(
+      {super.key, this.posts, required this.id, this.desc, this.title});
   final List<dynamic>? posts;
   late String id;
   final String? desc;
+  String? title;
 
   @override
   State<EtudiantBody> createState() => _EtudiantBodyState();
@@ -107,7 +110,21 @@ class _EtudiantBodyState extends State<EtudiantBody> {
                     Icons.call,
                     color: kGreenColor,
                   )),
-            )
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return QuizView(title: widget.title);
+                    }));
+                  },
+                  icon: Icon(
+                    Icons.quiz_rounded,
+                    color: kGreenColor,
+                  )),
+            ),
           ],
         ),
         body: FutureBuilder(
@@ -132,14 +149,20 @@ class _EtudiantBodyState extends State<EtudiantBody> {
                   final nomCours = post['nomCours'] as String;
                   final description = post['description'] as String;
                   final urlAttach = post['urlAttach'] as String;
+                  final name = post['filename'] as String;
+                  void refreshPosts() {
+                    setState(() {});
+                  }
 
                   return ClassroomPostWidget(
+                    refreshPosts: refreshPosts,
                     id: widget.id,
                     authorName: nomPrefesseur!,
                     postTitle: nomCours,
                     commentCount: 0,
                     description: description,
                     urlAttach: urlAttach,
+                    fileName: name,
                   );
                 },
               );
@@ -148,6 +171,7 @@ class _EtudiantBodyState extends State<EtudiantBody> {
             return const Text('No posts available.');
           },
         ));
+        
   }
 }
 
